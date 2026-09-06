@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "name": "Ana García",
+    "age": 28,
+    "city": "Madrid",
+    "email": "ana@example.com",
+    "registration_date": "2025-01-15"
+  },
+  {
+    "id": 2,
+    "name": "John Smith",
+    "age": 34,
+    "city": "London",
+    "email": "john@example.com",
+    "registration_date": "2025-02-03"
+  },
+  {
+    "id": 3,
+    "name": "María López",
+    "age": 22,
+    "city": "Barcelona",
+    "email": "maria@example.com",
+    "registration_date": "2025-02-18"
+  },
+  {
+    "id": 4,
+    "name": "David Brown",
+    "age": 41,
+    "city": null,
+    "email": "david@example.com",
+    "registration_date": "2025-03-01"
+  },
+  {
+    "id": 5,
+    "name": "Laura Martín",
+    "age": null,
+    "city": "Valencia",
+    "email": null,
+    "registration_date": "2025-03-12"
+  },
+  {
+    "id": 6,
+    "name": "Peter Wilson",
+    "age": 36,
+    "city": "Seville",
+    "email": "peter@example.com",
+    "registration_date": "2025-04-05"
+  },
+  {
+    "id": 7,
+    "name": "Sofía Torres",
+    "age": 29,
+    "city": "Bilbao",
+    "email": "sofia@example.com",
+    "registration_date": "2025-04-21"
+  },
+  {
+    "id": 8,
+    "name": "Michael Johnson",
+    "age": 45,
+    "city": "Málaga",
+    "email": "michael@example.com",
+    "registration_date": "2025-05-09"
+  }
+]

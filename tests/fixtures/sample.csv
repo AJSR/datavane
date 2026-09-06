@@ -1,0 +1,9 @@
+id,name,age,city,email,registration_date
+1,Ana García,28,Madrid,ana@example.com,2025-01-15
+2,John Smith,34,London,john@example.com,2025-02-03
+3,María López,22,Barcelona,maria@example.com,2025-02-18
+4,David Brown,41,,david@example.com,2025-03-01
+5,Laura Martín,,Valencia,,2025-03-12
+6,Peter Wilson,36,Seville,peter@example.com,2025-04-05
+7,Sofía Torres,29,Bilbao,sofia@example.com,2025-04-21
+8,Michael Johnson,45,Málaga,michael@example.com,2025-05-09
