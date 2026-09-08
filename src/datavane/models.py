@@ -29,6 +29,6 @@ class FieldInfo:
         if new_value is None:
             self.null_count += 1
             return
-        
+
         if self.example is None:
             self.example = new_value

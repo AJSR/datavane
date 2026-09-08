@@ -4,6 +4,7 @@ from datavane.generator import doc_table
 
 FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
 
+
 def test_doc_table(tmp_path):
     input_path = FIXTURES_DIR / "sample.json"
     output_path = tmp_path / "output.md"
@@ -38,6 +39,7 @@ def test_doc_table(tmp_path):
 
     assert "Ana García" in content
 
+
 def test_doc_table_overwrites_existing_file(tmp_path):
     input_path = FIXTURES_DIR / "sample.json"
     output_path = tmp_path / "output.md"
@@ -60,6 +62,7 @@ def test_doc_table_overwrites_existing_file(tmp_path):
 
     assert first_content == second_content
 
+
 def test_doc_table_csv(tmp_path):
     input_path = FIXTURES_DIR / "sample.csv"
     output_path = tmp_path / "output.md"
@@ -77,6 +80,7 @@ def test_doc_table_csv(tmp_path):
     assert "Records" in content
     assert "8" in content
     assert "Ana García" in content
+
 
 def test_doc_table_directory(tmp_path):
     input_dir = tmp_path / "data"

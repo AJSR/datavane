@@ -1,9 +1,9 @@
-
 from .models import FieldInfo
 
 MAX_DICT_FIELDS = 5
 MAX_LIST_FIELDS = 3
 MAX_STRING_LENGTH = 80
+
 
 def format_types(types: set[str]) -> str:
     """Format a set of types as a sorted, comma-separated string.
@@ -16,6 +16,7 @@ def format_types(types: set[str]) -> str:
     """
 
     return ", ".join(sorted(types))
+
 
 def format_presence(field: FieldInfo, total_records: int) -> str:
     """Calculate and format the percentage of records containing a field.
@@ -30,6 +31,7 @@ def format_presence(field: FieldInfo, total_records: int) -> str:
 
     return str(round((field.appearances / total_records) * 100, 1)) + "%"
 
+
 def format_nulls(field: FieldInfo, total_records: int) -> str:
     """Calculate and format the percentage of null values for a field.
 
@@ -43,6 +45,7 @@ def format_nulls(field: FieldInfo, total_records: int) -> str:
 
     return str(round((field.null_count / total_records) * 100, 1)) + "%"
 
+
 def format_example(example) -> str:
     """Format an example value for inclusion in the Markdown output.
 
@@ -51,7 +54,7 @@ def format_example(example) -> str:
     number of elements.
 
     Args:
-        example: Example value to format. 
+        example: Example value to format.
 
     Returns:
         str: A string representation suitable for the generated documentation.
@@ -91,7 +94,10 @@ def format_example(example) -> str:
 
     return str(example)
 
-def format_summary(table_name: str, total_fields: int, total_records: int, file) -> None:
+
+def format_summary(
+    table_name: str, total_fields: int, total_records: int, file
+) -> None:
     """Write the dataset summary section to a file.
 
     Args:
@@ -118,7 +124,8 @@ def markdown_row(field: FieldInfo, total_records: int) -> str:
         total_records (int): Total number of records in the dataset.
 
     Returns:
-        str: A Markdown table row containing the field's type, example, presence, and null percentage.
+        str: A Markdown table row containing the field's type, example, presence,
+          and null percentage.
     """
 
     return (
@@ -129,11 +136,13 @@ def markdown_row(field: FieldInfo, total_records: int) -> str:
         f"{format_nulls(field, total_records)} |\n"
     )
 
+
 def markdown_table(fields_dict: dict[str, FieldInfo], total_records: int, file) -> None:
     """Write the dataset schema as a Markdown table.
 
     Args:
-        fields_dict (dict[str, FieldInfo]): Mapping of field names to their inferred information.
+        fields_dict (dict[str, FieldInfo]): Mapping of field names 
+        to their inferred information.
         total_records (int): Total number of records in the dataset.
         file: File-like object where the Markdown output is written.
     """
@@ -141,4 +150,6 @@ def markdown_table(fields_dict: dict[str, FieldInfo], total_records: int, file) 
     file.write("## Schema \n")
     file.write("| Field | Type | Example | Presence | Nulls | \n")
     file.write("|-------|------|---------| -------- | ----- |\n")
-    file.writelines(markdown_row(field, total_records) for field in fields_dict.values())
+    file.writelines(
+        markdown_row(field, total_records) for field in fields_dict.values()
+    )

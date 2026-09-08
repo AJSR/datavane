@@ -6,14 +6,16 @@ from datavane.io import load_csv, load_dataset, load_json
 
 FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
 
+
 @pytest.fixture
 def sample_csv_path():
     return FIXTURES_DIR / "sample.csv"
 
+
 @pytest.fixture
 def sample_json_path():
     return FIXTURES_DIR / "sample.json"
-    
+
 
 def test_load_csv(sample_csv_path):
     data = load_csv(sample_csv_path)
@@ -23,6 +25,7 @@ def test_load_csv(sample_csv_path):
         assert isinstance(el, dict)
         for v in el.values():
             assert isinstance(v, str)
+
 
 def test_load_json(sample_json_path):
     data = load_json(sample_json_path)
@@ -38,12 +41,14 @@ def test_load_json(sample_json_path):
     assert data[4]["age"] is None
     assert data[4]["email"] is None
 
+
 def test_load_dataset_csv(sample_csv_path):
     data = load_dataset(sample_csv_path)
 
     assert isinstance(data, list)
     assert len(data) == 8
     assert all(isinstance(element, dict) for element in data)
+
 
 def test_load_dataset_directory(tmp_path):
     json_path = tmp_path / "sample.json"

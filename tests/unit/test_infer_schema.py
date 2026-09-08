@@ -5,19 +5,16 @@ from datavane.inference import infer_schema
 
 FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
 
+
 def load_fixture(filename: str):
     path = FIXTURES_DIR / filename
 
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
+
 def test_infer_schema_single_record():
-    data = [
-        {
-            "id": 1,
-            "name": "Tony"
-        }
-    ]
+    data = [{"id": 1, "name": "Tony"}]
 
     result = infer_schema(data)
 
@@ -32,6 +29,7 @@ def test_infer_schema_single_record():
     assert result["name"].appearances == 1
     assert result["name"].null_count == 0
     assert result["name"].example == "Tony"
+
 
 def test_infer_schema_multiple_records():
     data = [
@@ -61,6 +59,7 @@ def test_infer_schema_multiple_records():
     assert result["name"].null_count == 0
     assert result["name"].example == "Tony"
 
+
 def test_infer_schema_optional_field():
     data = [
         {
@@ -82,11 +81,12 @@ def test_infer_schema_optional_field():
     assert result["id"].appearances == 3
     assert result["id"].null_count == 0
     assert result["id"].example == 1
-    
+
     assert result["name"].types == {"str"}
     assert result["name"].appearances == 2
     assert result["name"].null_count == 0
     assert result["name"].example == "Tony"
+
 
 def test_infer_schema_null_field():
     data = [
@@ -110,11 +110,12 @@ def test_infer_schema_null_field():
     assert result["id"].appearances == 3
     assert result["id"].null_count == 0
     assert result["id"].example == 1
-        
+
     assert result["name"].types == {"null", "str"}
     assert result["name"].appearances == 3
     assert result["name"].null_count == 1
     assert result["name"].example == "Tony"
+
 
 def test_infer_schema_nested():
     data = [
@@ -140,6 +141,7 @@ def test_infer_schema_nested():
     assert result["country.name"].appearances == 1
     assert result["country.name"].example == "Spain"
 
+
 def test_infer_schema_lost_of_dicts():
     data = [
         {
@@ -158,11 +160,7 @@ def test_infer_schema_lost_of_dicts():
 
     result = infer_schema(data)
 
-    assert set(result) == {
-        "lineup",
-        "lineup[].player_id",
-        "lineup[].player_name"
-    }
+    assert set(result) == {"lineup", "lineup[].player_id", "lineup[].player_name"}
 
     assert result["lineup"].types == {"list[dict]"}
     assert result["lineup"].appearances == 1
@@ -175,12 +173,9 @@ def test_infer_schema_lost_of_dicts():
     assert result["lineup[].player_name"].appearances == 2
     assert result["lineup[].player_name"].example == "Player 1"
 
+
 def test_infer_schema_empty_list():
-    data = [
-        {
-            "cards": []
-        }
-    ]
+    data = [{"cards": []}]
 
     result = infer_schema(data)
 
@@ -188,6 +183,7 @@ def test_infer_schema_empty_list():
 
     assert result["cards"].types == {"list"}
     assert result["cards"].appearances == 1
+
 
 def test_infer_schema_multiple_nested_dict_multiple_records():
     data = [
@@ -214,6 +210,7 @@ def test_infer_schema_multiple_nested_dict_multiple_records():
 
     assert result["country.name"].appearances == 2
     assert result["country.name"].example == "Spain"
+
 
 def test_infer_schema_nested_list_with_null():
     data = [
@@ -244,6 +241,7 @@ def test_infer_schema_nested_list_with_null():
     assert nickname.null_count == 1
     assert nickname.example == "Player 1"
 
+
 def test_infer_schema_missing_field_in_list():
     data = [
         {
@@ -272,6 +270,7 @@ def test_infer_schema_missing_field_in_list():
     assert nickname.null_count == 0
     assert nickname.example == "Player 1"
 
+
 def test_infer_schema_deeply_nested():
     data = [
         {
@@ -281,14 +280,14 @@ def test_infer_schema_deeply_nested():
                     "country": {
                         "id": 34,
                         "name": "Spain",
-                    }
+                    },
                 },
                 {
                     "id": 2,
                     "country": {
                         "id": 33,
                         "name": "France",
-                    }
+                    },
                 },
             ]
         }
@@ -309,6 +308,7 @@ def test_infer_schema_deeply_nested():
 
     assert result["players[].country.name"].appearances == 2
     assert result["players[].country.name"].example == "Spain"
+
 
 def test_infer_schema_statsbomb_lineup():
     data = load_fixture("lineup_sample.json")
@@ -349,6 +349,7 @@ def test_infer_schema_statsbomb_lineup():
 
     assert result["lineup[].positions"].appearances == 3
     assert result["lineup[].positions[].position"].appearances == 3
+
 
 def test_context_count_for_optional_field():
     data = [

@@ -4,6 +4,7 @@ from pathlib import Path
 
 SUPPORTED_EXTENSIONS = {".json", ".csv"}
 
+
 def load_csv(file_path: Path) -> list[dict]:
     """Load records from a CSV file.
 
@@ -19,6 +20,7 @@ def load_csv(file_path: Path) -> list[dict]:
         reader = DictReader(csvfile)
         return list(reader)
 
+
 def load_json(file_path: Path) -> list[dict]:
     """Load records from a JSON file.
 
@@ -28,10 +30,11 @@ def load_json(file_path: Path) -> list[dict]:
     Returns:
         list[dict]: The records contained in the JSON file.
     """
-    with open(file_path, "r", encoding="utf-8") as jsonfile:
+    with open(file_path, encoding="utf-8") as jsonfile:
         data = json.load(jsonfile)
 
     return data
+
 
 def load_dataset(path: Path) -> list[dict]:
     """Load a dataset from a file or directory.
@@ -45,30 +48,32 @@ def load_dataset(path: Path) -> list[dict]:
 
     Raises:
         ValueError: If a file has an unsupported extension.
-        FileNotFoundError: If the provided path does not exist or is neither a file nor a directory.
+        FileNotFoundError: If the provided path does not exist or is neither a file 
+        nor a directory.
 
     Returns:
         list[dict]: A list of dictionaries containing the dataset records.
     """
 
     if path.is_file():
-        if path.suffix.lower() == '.json':
+        if path.suffix.lower() == ".json":
             return load_json(path)
-        elif path.suffix.lower() == '.csv':
+        elif path.suffix.lower() == ".csv":
             return load_csv(path)
         else:
-            raise ValueError(f"File path {path} not supported. File extension must be .csv or .json")
+            raise ValueError(
+                f"File path {path} not supported. File extension must be .csv or .json"
+            )
     elif path.is_dir():
         data = []
         for file in path.rglob("*"):
-
             if file.suffix.lower() not in SUPPORTED_EXTENSIONS:
                 continue
 
-            if file.suffix.lower() == '.json':
+            if file.suffix.lower() == ".json":
                 data.extend(load_json(file))
-            elif file.suffix.lower() == '.csv':
+            elif file.suffix.lower() == ".csv":
                 data.extend(load_csv(file))
         return data
     else:
-        raise FileNotFoundError(f"The path {path} doesn\'t exist")
+        raise FileNotFoundError(f"The path {path} doesn't exist")

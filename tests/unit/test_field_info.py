@@ -11,6 +11,7 @@ def test_field_info_initial_state():
     assert field.null_count == 0
     assert field.context_count == 0
 
+
 def test_update_value():
     field = FieldInfo(name="age")
 
@@ -20,6 +21,7 @@ def test_update_value():
     assert field.appearances == 1
     assert field.null_count == 0
     assert field.example == 25
+
 
 def test_update_none():
     field = FieldInfo(name="nickname")
@@ -31,6 +33,7 @@ def test_update_none():
     assert field.null_count == 1
     assert field.example is None
 
+
 def test_update_keeps_first_example():
     field = FieldInfo(name="age")
 
@@ -41,6 +44,7 @@ def test_update_keeps_first_example():
     assert field.appearances == 2
     assert field.null_count == 0
     assert field.example == 25
+
 
 def test_update_uses_first_non_null_example():
     field = FieldInfo(name="nickname")
@@ -54,6 +58,7 @@ def test_update_uses_first_non_null_example():
     assert field.null_count == 1
     assert field.example == "Tony"
 
+
 def test_update_collects_types():
     field = FieldInfo(name="age")
 
@@ -64,4 +69,3 @@ def test_update_collects_types():
     assert field.types == {"float", "int", "str"}
     assert field.appearances == 3
     assert field.null_count == 0
-

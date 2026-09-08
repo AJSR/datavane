@@ -7,93 +7,70 @@ from datavane.models import FieldInfo
 def test_format_types():
     assert formatting.format_types({"int", "str", "float"}) == "float, int, str"
 
+
 def test_format_single_type():
     assert formatting.format_types({"int"}) == "int"
+
 
 def test_format_types_empty():
     assert formatting.format_types(set()) == ""
 
+
 def test_format_presence_all_records():
-    field = FieldInfo(
-        name="name",
-        appearances=8,
-        context_count=8
-    )
+    field = FieldInfo(name="name", appearances=8, context_count=8)
 
     assert formatting.format_presence(field, 8) == "100.0%"
 
+
 def test_format_presence_half_records():
-    field = FieldInfo(
-        name="name",
-        appearances=4,
-        context_count=8
-    )
+    field = FieldInfo(name="name", appearances=4, context_count=8)
 
     assert formatting.format_presence(field, 8) == "50.0%"
 
+
 def test_format_presence_no_records():
-    field = FieldInfo(
-        name="name",
-        appearances=0,
-        context_count=8
-    )
+    field = FieldInfo(name="name", appearances=0, context_count=8)
 
     assert formatting.format_presence(field, 8) == "0.0%"
 
+
 def test_format_presence_decimal():
-    field = FieldInfo(
-        name="name",
-        appearances=1,
-        context_count=3
-    )
+    field = FieldInfo(name="name", appearances=1, context_count=3)
 
     assert formatting.format_presence(field, 3) == "33.3%"
 
+
 def test_format_nulls_no_nulls():
-    field = FieldInfo(
-        name="name",
-        appearances=8,
-        null_count=0,
-        context_count=8
-    )
+    field = FieldInfo(name="name", appearances=8, null_count=0, context_count=8)
 
     assert formatting.format_nulls(field, 8) == "0.0%"
 
+
 def test_format_nulls_all_nulls():
-    field = FieldInfo(
-        name="name",
-        appearances=8,
-        null_count=8,
-        context_count=8
-    )
+    field = FieldInfo(name="name", appearances=8, null_count=8, context_count=8)
 
     assert formatting.format_nulls(field, 8) == "100.0%"
 
+
 def test_format_nulls_half_nulls():
-    field = FieldInfo(
-        name="name",
-        appearances=8,
-        null_count=4,
-        context_count=8
-    )
+    field = FieldInfo(name="name", appearances=8, null_count=4, context_count=8)
 
     assert formatting.format_nulls(field, 8) == "50.0%"
 
+
 def test_format_nulls_decimal():
-    field = FieldInfo(
-        name="name",
-        appearances=8,
-        null_count=1,
-        context_count=8
-    )
+    field = FieldInfo(name="name", appearances=8, null_count=1, context_count=8)
 
     assert formatting.format_nulls(field, 8) == "12.5%"
+
 
 def test_format_example_none():
     assert formatting.format_example(None) == "null"
 
+
 def test_format_example_string():
     assert formatting.format_example("Juan Gámez") == "Juan Gámez"
+
 
 def test_format_example_long_string():
     value = "a" * 100
@@ -102,6 +79,7 @@ def test_format_example_long_string():
 
     assert result.endswith("...")
     assert len(result) == formatting.MAX_STRING_LENGTH + 3
+
 
 def test_format_example_dict():
     value = {
@@ -115,6 +93,7 @@ def test_format_example_dict():
     assert "id" in result
     assert "name" in result
     assert "age" in result
+
 
 def test_format_example_large_dict():
     value = {
@@ -133,6 +112,7 @@ def test_format_example_large_dict():
     assert "field5" in result
     assert "field6" not in result
 
+
 def test_format_example_list():
     value = ["a", "b", "c"]
 
@@ -141,6 +121,7 @@ def test_format_example_list():
     assert "a" in result
     assert "b" in result
     assert "c" in result
+
 
 def test_format_example_large_list():
     value = ["a", "b", "c", "d", "e"]
@@ -152,6 +133,7 @@ def test_format_example_large_list():
     assert "c" in result
     assert "d" not in result
     assert "e" not in result
+
 
 def test_markdown_row():
     field = FieldInfo(
@@ -169,6 +151,7 @@ def test_markdown_row():
 
     assert result == expected
 
+
 def test_markdown_row_with_nulls():
     field = FieldInfo(
         name="name",
@@ -184,6 +167,7 @@ def test_markdown_row_with_nulls():
     expected = "| name | null, str | Ana | 100.0% | 25.0% |\n"
 
     assert result == expected
+
 
 def test_markdown_table():
     fields = {
@@ -221,6 +205,7 @@ def test_markdown_table():
 
     assert result == expected
 
+
 def test_markdown_table_preserves_field_order():
     fields = {
         "name": FieldInfo(
@@ -248,6 +233,7 @@ def test_markdown_table_preserves_field_order():
     result = file.getvalue()
 
     assert result.index("| name |") < result.index("| id |")
+
 
 def test_format_summary():
     file = StringIO()

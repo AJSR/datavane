@@ -30,7 +30,13 @@ def infer_type(value) -> str:
 
     return type(value).__name__
 
-def process_object(obj: dict | list, fields: dict[str, FieldInfo], prefix: str = "", context_count: int = 1) -> None:
+
+def process_object(
+    obj: dict | list,
+    fields: dict[str, FieldInfo],
+    prefix: str = "",
+    context_count: int = 1,
+) -> None:
     """Recursively process a dictionary or list to infer field information.
 
     Nested fields are represented using dot notation, while fields inside
@@ -39,9 +45,11 @@ def process_object(obj: dict | list, fields: dict[str, FieldInfo], prefix: str =
 
     Args:
         obj (dict | list): Dictionary or list to process.
-        fields (dict[str, FieldInfo]): Mapping of field paths to their corresponding ``FieldInfo``.
+        fields (dict[str, FieldInfo]): Mapping of field paths to their corresponding 
+        ``FieldInfo``.
         prefix (str, optional): Path prefix used for nested fields. Defaults to "".
-        context_count (int, optional): Number of records represented by the current context. Defaults to 1.
+        context_count (int, optional): Number of records represented by the current 
+        context. Defaults to 1.
     """
 
     if isinstance(obj, dict):
@@ -52,7 +60,9 @@ def process_object(obj: dict | list, fields: dict[str, FieldInfo], prefix: str =
                 field_name = field
 
             if field_name not in fields:
-                fields[field_name] = FieldInfo(name=field_name, context_count=context_count)
+                fields[field_name] = FieldInfo(
+                    name=field_name, context_count=context_count
+                )
 
             fields[field_name].update(value, infer_type(value))
 
@@ -63,6 +73,7 @@ def process_object(obj: dict | list, fields: dict[str, FieldInfo], prefix: str =
         for entry in obj:
             if isinstance(entry, dict):
                 process_object(entry, fields, prefix + "[]", context_count=len(obj))
+
 
 def infer_schema(data: list[dict]) -> dict[str, FieldInfo]:
     """Infer the schema of a dataset.
@@ -75,7 +86,8 @@ def infer_schema(data: list[dict]) -> dict[str, FieldInfo]:
         data (list[dict]): Dataset represented as a list of dictionaries.
 
     Returns:
-        dict[str, FieldInfo]: A dictionary mapping field paths to their inferred ``FieldInfo``.
+        dict[str, FieldInfo]: A dictionary mapping field paths to their inferred
+        ``FieldInfo``.
     """
 
     fields: dict[str, FieldInfo] = {}
