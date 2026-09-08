@@ -45,10 +45,10 @@ def process_object(
 
     Args:
         obj (dict | list): Dictionary or list to process.
-        fields (dict[str, FieldInfo]): Mapping of field paths to their corresponding 
+        fields (dict[str, FieldInfo]): Mapping of field paths to their corresponding
         ``FieldInfo``.
         prefix (str, optional): Path prefix used for nested fields. Defaults to "".
-        context_count (int, optional): Number of records represented by the current 
+        context_count (int, optional): Number of records represented by the current
         context. Defaults to 1.
     """
 

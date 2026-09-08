@@ -48,7 +48,7 @@ def load_dataset(path: Path) -> list[dict]:
 
     Raises:
         ValueError: If a file has an unsupported extension.
-        FileNotFoundError: If the provided path does not exist or is neither a file 
+        FileNotFoundError: If the provided path does not exist or is neither a file
         nor a directory.
 
     Returns:

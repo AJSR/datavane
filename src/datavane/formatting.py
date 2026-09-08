@@ -141,7 +141,7 @@ def markdown_table(fields_dict: dict[str, FieldInfo], total_records: int, file) 
     """Write the dataset schema as a Markdown table.
 
     Args:
-        fields_dict (dict[str, FieldInfo]): Mapping of field names 
+        fields_dict (dict[str, FieldInfo]): Mapping of field names
         to their inferred information.
         total_records (int): Total number of records in the dataset.
         file: File-like object where the Markdown output is written.
