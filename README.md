@@ -1,8 +1,17 @@
-# datavane
+# Datavane
+
+[![Tests](https://github.com/AJSR/datavane/actions/workflows/tests.yml/badge.svg)](https://github.com/AJSR/datavane/actions/workflows/tests.yml)
+[![PyPI](https://img.shields.io/pypi/v/datavane.svg)](https://pypi.org/project/datavane/)
+[![Python](https://img.shields.io/pypi/pyversions/datavane.svg)](https://pypi.org/project/datavane/)
+[![License](https://img.shields.io/github/license/AJSR/datavane.svg)](https://github.com/AJSR/datavane/blob/main/LICENSE)
 
 A Python library for automatically generating documentation from datasets.
 
-`datavane` inspects JSON and CSV datasets, infers their structure and generates a Markdown data dictionary containing information about fields, types, examples, presence and null values.
+Datavane inspects JSON and CSV datasets, infers their structure and generates a Markdown data dictionary containing information about fields, types, examples, presence and null values.
+
+The project is designed primarily for **small data projects and simple data-processing workflows**, but it can also be used as a standalone utility wherever automatic dataset documentation is useful.
+
+[GitHub](https://github.com/AJSR/datavane) · [PyPI](https://pypi.org/project/datavane/)
 
 ## Features
 
@@ -24,12 +33,11 @@ Install Datavane from PyPI:
 pip install datavane
 ```
 
-Once installed, you can import it directly in your Python project:
+Then import the public API directly:
 
 ```python
 from datavane import doc_table
 ```
-
 
 ## Usage
 
@@ -38,7 +46,7 @@ The main public API is `doc_table()`:
 ```python
 from pathlib import Path
 
-from data_dictionary import doc_table
+from datavane import doc_table
 
 doc_table(
     Path("data/matches.json"),
@@ -61,7 +69,7 @@ For example, given a dataset containing:
 }
 ```
 
-the generated documentation can identify fields such as:
+Datavane can identify fields such as:
 
 ```text
 id
@@ -74,7 +82,7 @@ along with their inferred types, examples and statistics.
 
 ## Generated documentation
 
-The generated Markdown document contains a summary followed by the inferred schema:
+The generated Markdown document contains a dataset summary followed by the inferred schema:
 
 ```markdown
 # Matches
@@ -100,9 +108,9 @@ The generated Markdown document contains a summary followed by the inferred sche
 ## Project structure
 
 ```text
-data-dictionary/
+datavane/
 ├── src/
-│   └── data_dictionary/
+│   └── datavane/
 │       ├── __init__.py
 │       ├── models.py
 │       ├── inference.py
@@ -114,30 +122,66 @@ data-dictionary/
 │   ├── unit/
 │   └── integration/
 ├── pyproject.toml
+├── poetry.lock
 ├── README.md
 └── LICENSE
 ```
 
 ## Development
 
-Create a virtual environment and install the project in editable mode:
+Datavane uses Poetry for dependency management and packaging.
+
+Install the project and its development dependencies with:
 
 ```bash
-python -m venv .venv
-python -m pip install -e .
+poetry install
 ```
 
 Run the test suite with:
 
 ```bash
-pytest
+poetry run pytest
 ```
 
-The project contains both unit and integration tests.
+Run Ruff:
 
-## Status
+```bash
+poetry run ruff check .
+poetry run ruff format --check .
+```
 
-This project is currently in early development. The public API and internal implementation may change as the library evolves.
+Build the package with:
+
+```bash
+poetry build
+```
+
+The project contains both unit and integration tests and uses GitHub Actions for continuous integration.
+
+## Project status
+
+Datavane is currently in an early stage of development.
+
+Version `0.1.0` is the first public release. The current functionality focuses on automatic documentation of small datasets using JSON and CSV files.
+
+The project is intentionally being developed incrementally, with future versions expected to expand its dataset profiling and analysis capabilities.
+
+## Why Datavane?
+
+Datavane started as a project-specific utility for inspecting datasets in a football data project.
+
+As the functionality became more general, the utility was separated from the original project and developed into an independent Python package.
+
+This project is also part of my software and data engineering portfolio, and is an opportunity to apply software engineering practices such as:
+
+* Modular design
+* Unit and integration testing
+* Continuous integration
+* Code quality and formatting
+* Python packaging
+* Dependency management
+* Versioning and releases
+* Distribution through PyPI
 
 ## License
 

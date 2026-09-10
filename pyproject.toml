@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=75"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "datavane"
@@ -9,9 +9,11 @@ description = "A Python library for automatic dataset documentation"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
+license-files = ["LICEN[CS]E*"]
 authors = [
-    {name = "Antonio Jesús Salido Ranea"}
+    {name = "Antonio Jesús Salido Ranea", email = "antoniosalidoranea@gmail.com"}
 ]
+
 dependencies = []
 
 classifiers = [
@@ -25,14 +27,15 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 
+[project.urls]
+Homepage = "https://github.com/AJSR/datavane"
+Issues = "https://github.com/AJSR/datavane/issues"
+
 [project.optional-dependencies]
 dev = [
     "pytest",
     "ruff",
 ]
-
-[tool.setuptools.packages.find]
-where = ["src"]
 
 [tool.ruff]
 line-length = 88
@@ -44,4 +47,9 @@ select = [
     "F",
     "I",
     "UP",
+]
+
+[tool.poetry]
+packages = [
+    { include = "datavane", from = "src" }
 ]
