@@ -31,7 +31,7 @@ classifiers = [
 Homepage = "https://github.com/AJSR/datavane"
 Issues = "https://github.com/AJSR/datavane/issues"
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest",
     "ruff",
