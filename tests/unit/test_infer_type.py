@@ -1,6 +1,6 @@
 import pytest
 
-from datavane.inference import infer_type
+from datavane.inference.json_inference import infer_type
 
 
 @pytest.mark.parametrize(

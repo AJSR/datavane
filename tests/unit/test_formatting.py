@@ -1,15 +1,20 @@
 from io import StringIO
 
 from datavane import formatting
-from datavane.models import FieldInfo
+from datavane.models import FieldInfo, InferredStructure, InferredType
 
 
 def test_format_types():
-    assert formatting.format_types({"int", "str", "float"}) == "float, int, str"
+    assert (
+        formatting.format_types(
+            {InferredType.INT, InferredType.STR, InferredType.FLOAT}
+        )
+        == "float, int, str"
+    )
 
 
 def test_format_single_type():
-    assert formatting.format_types({"int"}) == "int"
+    assert formatting.format_types({InferredType.INT}) == "int"
 
 
 def test_format_types_empty():
@@ -19,49 +24,49 @@ def test_format_types_empty():
 def test_format_presence_all_records():
     field = FieldInfo(name="name", appearances=8, context_count=8)
 
-    assert formatting.format_presence(field, 8) == "100.0%"
+    assert formatting.format_presence(field) == "100.0%"
 
 
 def test_format_presence_half_records():
     field = FieldInfo(name="name", appearances=4, context_count=8)
 
-    assert formatting.format_presence(field, 8) == "50.0%"
+    assert formatting.format_presence(field) == "50.0%"
 
 
 def test_format_presence_no_records():
     field = FieldInfo(name="name", appearances=0, context_count=8)
 
-    assert formatting.format_presence(field, 8) == "0.0%"
+    assert formatting.format_presence(field) == "0.0%"
 
 
 def test_format_presence_decimal():
     field = FieldInfo(name="name", appearances=1, context_count=3)
 
-    assert formatting.format_presence(field, 3) == "33.3%"
+    assert formatting.format_presence(field) == "33.3%"
 
 
 def test_format_nulls_no_nulls():
     field = FieldInfo(name="name", appearances=8, null_count=0, context_count=8)
 
-    assert formatting.format_nulls(field, 8) == "0.0%"
+    assert formatting.format_nulls(field) == "0.0%"
 
 
 def test_format_nulls_all_nulls():
     field = FieldInfo(name="name", appearances=8, null_count=8, context_count=8)
 
-    assert formatting.format_nulls(field, 8) == "100.0%"
+    assert formatting.format_nulls(field) == "100.0%"
 
 
 def test_format_nulls_half_nulls():
     field = FieldInfo(name="name", appearances=8, null_count=4, context_count=8)
 
-    assert formatting.format_nulls(field, 8) == "50.0%"
+    assert formatting.format_nulls(field) == "50.0%"
 
 
 def test_format_nulls_decimal():
     field = FieldInfo(name="name", appearances=8, null_count=1, context_count=8)
 
-    assert formatting.format_nulls(field, 8) == "12.5%"
+    assert formatting.format_nulls(field) == "12.5%"
 
 
 def test_format_example_none():
@@ -138,14 +143,14 @@ def test_format_example_large_list():
 def test_markdown_row():
     field = FieldInfo(
         name="id",
-        types={"int"},
+        types={InferredType.INT},
         example=1,
         appearances=8,
         null_count=0,
         context_count=8,
     )
 
-    result = formatting.markdown_row(field, 8)
+    result = formatting.markdown_row(field)
 
     expected = "| id | int | 1 | 100.0% | 0.0% |\n"
 
@@ -155,16 +160,16 @@ def test_markdown_row():
 def test_markdown_row_with_nulls():
     field = FieldInfo(
         name="name",
-        types={"str", "null"},
+        types={InferredType.STR, InferredType.UNKNOWN},
         example="Ana",
         appearances=8,
         null_count=2,
         context_count=8,
     )
 
-    result = formatting.markdown_row(field, 8)
+    result = formatting.markdown_row(field)
 
-    expected = "| name | null, str | Ana | 100.0% | 25.0% |\n"
+    expected = "| name | str, unknown | Ana | 100.0% | 25.0% |\n"
 
     assert result == expected
 
@@ -173,7 +178,7 @@ def test_markdown_table():
     fields = {
         "id": FieldInfo(
             name="id",
-            types={"int"},
+            types={InferredType.INT},
             example=1,
             appearances=8,
             null_count=0,
@@ -181,7 +186,7 @@ def test_markdown_table():
         ),
         "name": FieldInfo(
             name="name",
-            types={"str"},
+            types={InferredType.STR},
             example="Ana",
             appearances=8,
             null_count=0,
@@ -191,14 +196,18 @@ def test_markdown_table():
 
     file = StringIO()
 
-    formatting.markdown_table(fields, 8, file)
+    formatting.markdown_table(fields, file)
 
     result = file.getvalue()
 
     expected = (
         "## Schema \n"
-        "| Field | Type | Example | Presence | Nulls | \n"
-        "|-------|------|---------| -------- | ----- |\n"
+        "| Field | Type | Example | Presence (%) | Nulls (%) |\n"
+        "|-------|------|---------|--------------|-----------|\n"
+        "\n"
+        "Presence is the percentage of parent contexts in which a field "
+        "appears. Nulls is the percentage of observed field values that "
+        "are null. Percentages are shown as N/A when their denominator is zero.\n\n"
         "| id | int | 1 | 100.0% | 0.0% |\n"
         "| name | str | Ana | 100.0% | 0.0% |\n"
     )
@@ -210,7 +219,7 @@ def test_markdown_table_preserves_field_order():
     fields = {
         "name": FieldInfo(
             name="name",
-            types={"str"},
+            types={InferredType.STR},
             example="Ana",
             appearances=8,
             null_count=0,
@@ -218,7 +227,7 @@ def test_markdown_table_preserves_field_order():
         ),
         "id": FieldInfo(
             name="id",
-            types={"int"},
+            types={InferredType.INT},
             example=1,
             appearances=8,
             null_count=0,
@@ -228,7 +237,7 @@ def test_markdown_table_preserves_field_order():
 
     file = StringIO()
 
-    formatting.markdown_table(fields, 8, file)
+    formatting.markdown_table(fields, file)
 
     result = file.getvalue()
 
@@ -253,8 +262,75 @@ def test_format_summary():
         "## Dataset summary \n"
         "| Property | Value | \n"
         "|----------|-------| \n"
-        "| Records | 8| \n"
+        "| Records | 8 | \n"
         "| Fields  | 6 | \n"
     )
 
     assert result == expected
+
+
+def test_format_presence_uses_context_count():
+    field = FieldInfo(
+        name="items[].id",
+        appearances=2,
+        context_count=3,
+    )
+
+    assert formatting.format_presence(field) == "66.7%"
+
+
+def test_format_presence_with_zero_context_count():
+    field = FieldInfo(
+        name="items[].id",
+        appearances=0,
+        context_count=0,
+    )
+
+    assert formatting.format_presence(field) == "N/A"
+
+
+def test_format_nulls_uses_field_appearances():
+    field = FieldInfo(
+        name="items[].id",
+        appearances=4,
+        null_count=1,
+        context_count=5,
+    )
+
+    assert formatting.format_nulls(field) == "25.0%"
+
+
+def test_format_nulls_with_zero_appearances():
+    field = FieldInfo(
+        name="items[].id",
+        appearances=0,
+        null_count=0,
+        context_count=0,
+    )
+
+    assert formatting.format_nulls(field) == "N/A"
+
+
+def test_format_field_types_scalar_and_structure():
+    field = FieldInfo(
+        name="profile",
+        types={InferredType.STR},
+        structures={InferredStructure.OBJECT},
+    )
+
+    assert formatting.format_field_types(field) == "object, str"
+
+
+def test_format_field_types_array():
+    field = FieldInfo(
+        name="orders",
+        structures={InferredStructure.ARRAY},
+    )
+
+    assert formatting.format_field_types(field) == "array"
+
+
+def test_format_field_types_empty():
+    field = FieldInfo(name="unknown_field")
+
+    assert formatting.format_field_types(field) == ""

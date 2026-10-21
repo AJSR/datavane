@@ -109,3 +109,22 @@ def test_doc_table_directory(tmp_path):
     assert "# Users" in content
     assert "## Dataset summary" in content
     assert "Records" in content
+
+
+def test_doc_table_creates_missing_output_directories(tmp_path):
+    input_path = FIXTURES_DIR / "formatting_sample.json"
+    output_path = tmp_path / "reports" / "nested" / "output.md"
+
+    assert not output_path.parent.exists()
+
+    doc_table(
+        input_path,
+        "Formatting sample",
+        output_path,
+    )
+
+    assert output_path.exists()
+    assert output_path.is_file()
+
+    content = output_path.read_text(encoding="utf-8")
+    assert "# Formatting sample" in content

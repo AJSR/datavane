@@ -1,49 +1,46 @@
-from .models import FieldInfo
+from .models import FieldInfo, InferredType
 
 MAX_DICT_FIELDS = 5
 MAX_LIST_FIELDS = 3
 MAX_STRING_LENGTH = 80
 
 
-def format_types(types: set[str]) -> str:
+def format_types(types: set[InferredType]) -> str:
     """Format a set of types as a sorted, comma-separated string.
 
     Args:
-        types (set[str]): Set containing the inferred types of a field.
+        types: Set containing the inferred types of a field.
 
     Returns:
         str: A comma-separated string containing the types in sorted order.
     """
 
+    return ", ".join(sorted(type_.value for type_ in types))
+
+
+def format_field_types(field: FieldInfo) -> str:
+    """Format a field's scalar types and JSON structures."""
+    types = {type_.value for type_ in field.types}
+    types.update(structure.value for structure in field.structures)
     return ", ".join(sorted(types))
 
 
-def format_presence(field: FieldInfo, total_records: int) -> str:
-    """Calculate and format the percentage of records containing a field.
+def format_presence(field: FieldInfo) -> str:
+    """Calculate field presence as a percentage of its parent contexts."""
+    if field.context_count == 0:
+        return "N/A"
 
-    Args:
-        field (FieldInfo): Field information containing the number of appearances.
-        total_records (int): Total number of records in the dataset.
-
-    Returns:
-        str: The field presence as a percentage string.
-    """
-
-    return str(round((field.appearances / total_records) * 100, 1)) + "%"
+    percentage = (field.appearances / field.context_count) * 100
+    return f"{round(percentage, 1)}%"
 
 
-def format_nulls(field: FieldInfo, total_records: int) -> str:
-    """Calculate and format the percentage of null values for a field.
+def format_nulls(field: FieldInfo) -> str:
+    """Calculate null values as a percentage of field appearances."""
+    if field.appearances == 0:
+        return "N/A"
 
-    Args:
-        field (FieldInfo): Field information containing the number of null values.
-        total_records (int): Total number of records in the dataset.
-
-    Returns:
-        str: The null value percentage as a string.
-    """
-
-    return str(round((field.null_count / total_records) * 100, 1)) + "%"
+    percentage = (field.null_count / field.appearances) * 100
+    return f"{round(percentage, 1)}%"
 
 
 def format_example(example) -> str:
@@ -112,32 +109,22 @@ def format_summary(
     file.write("## Dataset summary \n")
     file.write("| Property | Value | \n")
     file.write("|----------|-------| \n")
-    file.write(f"| Records | {total_records}| \n")
+    file.write(f"| Records | {total_records} | \n")
     file.write(f"| Fields  | {total_fields} | \n")
 
 
-def markdown_row(field: FieldInfo, total_records: int) -> str:
-    """Format a field as a Markdown table row.
-
-    Args:
-        field (FieldInfo): Field information to format.
-        total_records (int): Total number of records in the dataset.
-
-    Returns:
-        str: A Markdown table row containing the field's type, example, presence,
-          and null percentage.
-    """
-
+def markdown_row(field: FieldInfo) -> str:
+    """Format a field as a Markdown table row."""
     return (
         f"| {field.name} | "
-        f"{format_types(field.types)} | "
+        f"{format_field_types(field)} | "
         f"{format_example(field.example)} | "
-        f"{format_presence(field, total_records)} | "
-        f"{format_nulls(field, total_records)} |\n"
+        f"{format_presence(field)} | "
+        f"{format_nulls(field)} |\n"
     )
 
 
-def markdown_table(fields_dict: dict[str, FieldInfo], total_records: int, file) -> None:
+def markdown_table(fields_dict: dict[str, FieldInfo], file) -> None:
     """Write the dataset schema as a Markdown table.
 
     Args:
@@ -148,8 +135,21 @@ def markdown_table(fields_dict: dict[str, FieldInfo], total_records: int, file) 
     """
 
     file.write("## Schema \n")
-    file.write("| Field | Type | Example | Presence | Nulls | \n")
-    file.write("|-------|------|---------| -------- | ----- |\n")
-    file.writelines(
-        markdown_row(field, total_records) for field in fields_dict.values()
+    file.write("| Field | Type | Example | Presence (%) | Nulls (%) |\n")
+    file.write("|-------|------|---------|--------------|-----------|\n")
+    file.write(
+        "\nPresence is the percentage of parent contexts in which a field appears. "
+        "Nulls is the percentage of observed field values that are null."
+        " Percentages are shown as N/A when their denominator is zero.\n\n"
     )
+    file.writelines(markdown_row(field) for field in fields_dict.values())
+
+
+def test_format_presence_with_zero_context() -> None:
+    # ? A field without context doesn't have presence percentage
+    assert format_presence(0, 0) == "N/A"
+
+
+def test_format_nulls_with_zero_appearances() -> None:
+    # ? With no appearances, there isn't a null percentage
+    assert format_nulls(0, 0) == "N/A"

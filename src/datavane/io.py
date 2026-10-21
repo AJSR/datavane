@@ -17,8 +17,22 @@ def load_csv(file_path: Path) -> list[dict]:
         list[dict]: A list of dictionaries containing the CSV records.
     """
     with open(file_path, newline="", encoding="utf-8") as csvfile:
-        reader = DictReader(csvfile)
-        return list(reader)
+        reader = DictReader(csvfile, strict=True)
+        if reader.fieldnames is None:
+            return []
+
+        data = []
+
+        for row in reader:
+            if None in row:
+                raise ValueError("CSV row contains extra columns")
+
+            if any(value is None for value in row.values()):
+                raise ValueError("CSV row contains missing columns")
+
+            data.append(row)
+
+        return data
 
 
 def load_json(file_path: Path) -> list[dict]:

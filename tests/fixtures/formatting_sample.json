@@ -1,0 +1,43 @@
+
+[
+  {
+    "id": 1,
+    "name": "Ana",
+    "age": 28,
+    "active": true,
+    "profile": {
+      "city": "Málaga",
+      "country": "España"
+    },
+    "tags": ["python", "sql"],
+    "orders": [
+      {"order_id": "A001", "total": 19.5},
+      {"order_id": "A002", "total": null}
+    ]
+  },
+  {
+    "id": 2,
+    "name": null,
+    "active": true,
+    "profile": {
+      "city": null,
+      "country": "España"
+    },
+    "tags": [],
+    "orders": [
+      {"order_id": "A003", "total": 42.0},
+      {"total": 12.0}
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Luis",
+    "age": 35,
+    "active": false,
+    "profile": {
+      "city": "Sevilla"
+    },
+    "tags": ["rust"],
+    "orders": []
+  }
+]
