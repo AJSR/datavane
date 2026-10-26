@@ -71,8 +71,6 @@ def doc_table(path: Path, table_name: str, output_path: Path) -> None:
         output_path (Path): Path where the Markdown documentation will be written.
     """
 
-    data = load_dataset(path)
-    total_records = len(data)
     if path.is_file():
         data = load_dataset(path)
         total_records = len(data)
@@ -82,7 +80,7 @@ def doc_table(path: Path, table_name: str, output_path: Path) -> None:
         else:
             schema = infer_schema(data)
 
-    else:
+    elif path.is_dir():
         json_data = []
         csv_data = []
 
@@ -116,8 +114,12 @@ def doc_table(path: Path, table_name: str, output_path: Path) -> None:
             if "." not in name:
                 field.context_count = total_records
 
+    else:
+        raise FileNotFoundError(f"The path {path} doesn't exist")
+
     total_fields = len(schema)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+
     with open(output_path, "w", encoding="utf-8") as f:
         format_summary(table_name, total_fields, total_records, f)
         markdown_table(schema, f)
