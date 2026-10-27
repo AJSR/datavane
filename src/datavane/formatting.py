@@ -1,4 +1,4 @@
-from .models import FieldInfo, InferredType
+from .models import FieldInfo, InferredType, ProcessingSummary
 
 MAX_DICT_FIELDS = 5
 MAX_LIST_FIELDS = 3
@@ -93,7 +93,11 @@ def format_example(example) -> str:
 
 
 def format_summary(
-    table_name: str, total_fields: int, total_records: int, file
+    table_name: str,
+    total_fields: int,
+    total_records: int,
+    file,
+    summary: ProcessingSummary,
 ) -> None:
     """Write the dataset summary section to a file.
 
@@ -105,12 +109,43 @@ def format_summary(
     """
 
     file.write(f"# {table_name} \n")
-    file.write("> Data dictionary generated automatically by `datavane` \n")
-    file.write("## Dataset summary \n")
-    file.write("| Property | Value | \n")
-    file.write("|----------|-------| \n")
-    file.write(f"| Records | {total_records} | \n")
-    file.write(f"| Fields  | {total_fields} | \n")
+    if summary.partial:
+        file.write(
+            "> This documentation is from a partial set of files "
+            "due to the presence of invalid or unsupported files.\n\n"
+        )
+    file.write("> Data dictionary generated automatically by `datavane`\n\n")
+    file.write("## Processing Summary\n")
+    file.write(
+        f"""- Files found: {
+            summary.supported_files + len(summary.unsupported_files)
+        }\n"""
+    )
+    file.write(f"- Supported files: {summary.supported_files}\n")
+    if not summary.unsupported_files:
+        file.write("- No unsupported files.\n")
+    else:
+        file.write(f"- Unsupported files: {len(summary.unsupported_files)}\n")
+    file.write(f"- Successfully processed: {summary.processed_files}\n")
+    if summary.failed_files:
+        file.write(f"- Failed files: {len(summary.failed_files)}\n\n")
+    if summary.unsupported_files:
+        file.write("### Unsupported files\n")
+        for uns_file in summary.unsupported_files:
+            file.write(f"- `{uns_file}`\n")
+        file.write("\n")
+    if summary.failed_files:
+        file.write("### Failed files\n")
+        for failed_file in summary.failed_files:
+            file.write(f"- `{failed_file.file_path.name}`\n")
+            file.write(f"Error type: {failed_file.error_type}\n")
+            file.write(f"Error message: {failed_file.message}\n")
+    file.write("--------------------------------------------------\n")
+    file.write("## Dataset summary\n")
+    file.write("| Property | Value |\n")
+    file.write("|----------|-------|\n")
+    file.write(f"| Records | {total_records} |\n")
+    file.write(f"| Fields  | {total_fields} |\n")
 
 
 def markdown_row(field: FieldInfo) -> str:
