@@ -1,7 +1,16 @@
 from io import StringIO
+from pathlib import Path
+
+import pytest
 
 from datavane import formatting
-from datavane.models import FieldInfo, InferredStructure, InferredType
+from datavane.models import (
+    FieldInfo,
+    FileError,
+    InferredStructure,
+    InferredType,
+    ProcessingSummary,
+)
 
 
 def test_format_types():
@@ -244,29 +253,128 @@ def test_markdown_table_preserves_field_order():
     assert result.index("| name |") < result.index("| id |")
 
 
-def test_format_summary():
+@pytest.mark.parametrize(
+    (
+        "partial",
+        "unsupported_files",
+        "failed_files",
+        "processed_files",
+        "expected_sections",
+    ),
+    [
+        (
+            False,
+            [],
+            [],
+            2,
+            [
+                "- No unsupported files.\n",
+            ],
+        ),
+        (
+            False,
+            ["notes.txt"],
+            [],
+            2,
+            [
+                "- Unsupported files: 1\n",
+                "### Unsupported files\n",
+                "- `notes.txt`\n",
+            ],
+        ),
+        (
+            True,
+            [],
+            [
+                FileError(
+                    Path("invalid.json"),
+                    "JSONDecodeError",
+                    "Invalid JSON",
+                )
+            ],
+            1,
+            [
+                "> This documentation is from a partial set of files "
+                "due to the presence of invalid or unsupported files.\n\n",
+                "- Failed files: 1\n\n",
+                "### Failed files\n",
+                "- `invalid.json`\n",
+                "Error type: JSONDecodeError\n",
+                "Error message: Invalid JSON\n",
+            ],
+        ),
+        (
+            True,
+            ["notes.txt"],
+            [
+                FileError(
+                    Path("invalid.json"),
+                    "JSONDecodeError",
+                    "Invalid JSON",
+                )
+            ],
+            1,
+            [
+                "- Unsupported files: 1\n",
+                "### Unsupported files\n",
+                "- `notes.txt`\n",
+                "### Failed files\n",
+                "- `invalid.json`\n",
+            ],
+        ),
+    ],
+)
+def test_format_summary(
+    partial,
+    unsupported_files,
+    failed_files,
+    processed_files,
+    expected_sections,
+):
     file = StringIO()
+    summary = ProcessingSummary(
+        supported_files=2,
+        unsupported_files=unsupported_files,
+        processed_files=processed_files,
+        failed_files=failed_files,
+        partial=partial,
+    )
 
     formatting.format_summary(
         "Users",
         6,
         8,
         file,
+        summary,
     )
 
     result = file.getvalue()
 
-    expected = (
-        "# Users \n"
-        "> Data dictionary generated automatically by `datavane` \n"
-        "## Dataset summary \n"
-        "| Property | Value | \n"
-        "|----------|-------| \n"
-        "| Records | 8 | \n"
-        "| Fields  | 6 | \n"
-    )
+    assert result.startswith("# Users \n")
+    assert "> Data dictionary generated automatically by `datavane`\n\n" in result
+    assert "## Processing Summary\n" in result
+    assert "- Files found: " in result
+    assert "- Supported files: 2\n" in result
+    assert f"- Successfully processed: {processed_files}\n" in result
+    assert "## Dataset summary\n" in result
+    assert "| Records | 8 |\n" in result
+    assert "| Fields  | 6 |\n" in result
 
-    assert result == expected
+    if partial:
+        assert (
+            "> This documentation is from a partial set of files "
+            "due to the presence of invalid or unsupported files.\n\n"
+            "> Data dictionary generated automatically by `datavane`\n\n"
+        ) in result
+
+    for section in expected_sections:
+        assert section in result
+
+    if not failed_files:
+        assert "### Failed files\n" not in result
+
+    if not unsupported_files:
+        assert "### Unsupported files\n" not in result
 
 
 def test_format_presence_uses_context_count():

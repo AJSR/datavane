@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
 
 
 class InferredType(Enum):
@@ -92,3 +93,20 @@ class FieldInfo:
 
         if self.example is None:
             self.example = new_value
+
+
+@dataclass
+class FileError:
+    file_path: Path
+    error_type: str
+    message: str
+
+
+@dataclass
+class ProcessingSummary:
+    supported_files: int = 0
+    unsupported_files: list = field(default_factory=list)
+    processed_files: int = 0
+    failed_files: list = field(default_factory=list)
+    total_dirs: int = 0
+    partial: bool = False
